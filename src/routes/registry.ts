@@ -1,11 +1,13 @@
 import AuthRoutes from "./auth.routes";
 import AttendanceRoutes from "./attendance.route";
-import ReportRoutes from "./report.route";
+import UserRoutes from "./user.routes";
+import BookRoutes from "./book.routes";
 
 const RoutesRegistry = {
     AuthRoutes,
     AttendanceRoutes,
-    ReportRoutes
+    UserRoutes,
+    BookRoutes,
 };
 
 export default RoutesRegistry;
