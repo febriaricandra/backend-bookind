@@ -6,6 +6,7 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
 model User {
   id        String   @id @default(uuid())
   name      String
@@ -14,6 +15,10 @@ model User {
   role      Role     @default(EMPLOYEE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  phoneNumber String? // opsional
+  address     String? // opsional
+  profileImg  String? // opsional
 
   attendances      Attendance[]
   attendanceReports AttendanceReport[]
