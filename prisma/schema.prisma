@@ -8,62 +8,69 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(EMPLOYEE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  phoneNumber String? // opsional
-  address     String? // opsional
-  profileImg  String? // opsional
-
-  attendances      Attendance[]
-  attendanceReports AttendanceReport[]
-}
-
-model Attendance {
-  id               String    @id @default(uuid())
-  userId           String
-  checkInTime      DateTime
-  checkOutTime     DateTime?
-  checkInNotes     String?
-  checkOutNotes    String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
-
-  @@index([userId, checkInTime])
-}
-
-model AttendanceReport {
-  id                  String   @id @default(uuid())
-  userId              String
-  date                DateTime @db.Date
-  checkInTime         DateTime?
-  checkOutTime        DateTime?
-  workDurationMinutes Int?
-  status              AttendanceStatus @default(ABSENT)
+  id                  String    @id @default(uuid())
+  name                String
+  email               String    @unique
+  password            String
+  role                Role      @default(USER)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  phoneNumber         String?
+  address             String?
+  profileImg          String?
+  membershipActive    Boolean   @default(false)
+  membershipExpiresAt DateTime?
+  membershipType      String?
+
+  books        Book[]
+  transactions Transaction[]
+  reviews      Review[]
+}
+
+model Book {
+  id         String   @id @default(uuid())
+  title      String
+  author     String
+  price      Int
+  condition  String
+  category   String
+  story      String
+  accessible Boolean  @default(false)
+  img        String?
+  ownerId    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  owner        User          @relation(fields: [ownerId], references: [id])
+  reviews      Review[]
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  userId    String
+  bookId    String
+  type      String
+  amount    Float
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
+}
 
-  @@unique([userId, date])
-  @@index([date])
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  bookId    String
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
 }
 
 enum Role {
   ADMIN
-  EMPLOYEE
-}
-
-enum AttendanceStatus {
-  PRESENT
-  ABSENT
-  LATE
-  LEAVE
+  USER
 }

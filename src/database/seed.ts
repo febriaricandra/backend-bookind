@@ -20,22 +20,48 @@ async function main() {
     },
   });
 
-  // Create employee user
-  const employeePassword = await bcrypt.hash('password123', 10);
-  const employee = await prisma.user.upsert({
-    where: { email: 'employee@example.com' },
+  // Create regular user
+  const userPassword = await bcrypt.hash('password123', 10);
+  const user = await prisma.user.upsert({
+    where: { email: 'user@example.com' },
     update: {},
     create: {
-      name: 'Employee User',
-      email: 'employee@example.com',
-      password: employeePassword,
-      role: 'EMPLOYEE',
+      name: 'Regular User',
+      email: 'user@example.com',
+      password: userPassword,
+      role: 'USER',
     },
+  });
+
+  // Create books
+  const books = await prisma.book.createMany({
+    data: [
+      {
+        title: 'Belajar Node.js',
+        author: 'Febriari Candra',
+        price: 100000,
+        condition: 'Baru',
+        category: 'Programming',
+        story: 'Panduan lengkap belajar Node.js untuk pemula.',
+        accessible: true,
+        ownerId: user.id,
+      },
+      {
+        title: 'Dasar-dasar TypeScript',
+        author: 'Febriari Candra',
+        price: 120000,
+        condition: 'Bekas',
+        category: 'Programming',
+        story: 'Buku referensi TypeScript untuk developer JavaScript.',
+        accessible: false,
+        ownerId: admin.id,
+      },
+    ],
   });
 
   logger.info('Database seeded successfully!');
   logger.info('Admin user:', { email: admin.email, password: 'password123' });
-  logger.info('Employee user:', { email: employee.email, password: 'password123' });
+  logger.info('Regular user:', { email: user.email, password: 'password123' });
 }
 
 main()
